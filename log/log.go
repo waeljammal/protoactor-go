@@ -24,8 +24,12 @@ type Logger struct {
 	context []Field
 }
 
-func New(level Level, prefix string, context ...Field) *Logger {
+var DefaultLoggerFactory = func(level Level, prefix string, context ...Field) *Logger {
 	return &Logger{level: level, prefix: prefix, context: context}
+}
+
+func New(level Level, prefix string, context ...Field) *Logger {
+	return DefaultLoggerFactory(level, prefix, context...)
 }
 
 func (l *Logger) With(fields ...Field) *Logger {
