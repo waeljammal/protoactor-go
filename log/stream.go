@@ -12,6 +12,10 @@ func Unsubscribe(sub *Subscription) {
 	es.Unsubscribe(sub)
 }
 
+func SubscribeReplaceAll(fn func(evt Event)) *Subscription {
+	return es.SubscribeReplaceAll(fn)
+}
+
 type eventStream struct {
 	sync.RWMutex
 	subscriptions []*Subscription
@@ -61,6 +65,21 @@ func (es *eventStream) Publish(evt Event) {
 			s.fn(evt)
 		}
 	}
+}
+
+func (es *eventStream) SubscribeReplaceAll(fn func(evt Event)) *Subscription {
+	es.Lock()
+	for _, subscription := range es.subscriptions {
+		es.Unsubscribe(subscription)
+	}
+	sub := &Subscription{
+		es: es,
+		i:  len(es.subscriptions),
+		fn: fn,
+	}
+	es.subscriptions = []*Subscription{sub}
+	es.Unlock()
+	return sub
 }
 
 // Subscription is returned from the Subscribe function.
