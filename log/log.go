@@ -28,6 +28,7 @@ type LoggerInterface interface {
 	With(fields ...Field) LoggerInterface
 	Level() Level
 	SetLevel(level Level)
+	Info(msg string, fields ...Field)
 	Debug(msg string, fields ...Field)
 	Error(msg string, fields ...Field)
 }
