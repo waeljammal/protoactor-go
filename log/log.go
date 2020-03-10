@@ -24,15 +24,23 @@ type Logger struct {
 	context []Field
 }
 
-var DefaultLoggerFactory = func(level Level, prefix string, context ...Field) *Logger {
+type LoggerInterface interface {
+	With(fields ...Field) LoggerInterface
+	Level() Level
+	SetLevel(level Level)
+	Debug(msg string, fields ...Field)
+	Error(msg string, fields ...Field)
+}
+
+var DefaultLoggerFactory = func(level Level, prefix string, context ...Field) LoggerInterface {
 	return &Logger{level: level, prefix: prefix, context: context}
 }
 
-func New(level Level, prefix string, context ...Field) *Logger {
+func New(level Level, prefix string, context ...Field) LoggerInterface {
 	return DefaultLoggerFactory(level, prefix, context...)
 }
 
-func (l *Logger) With(fields ...Field) *Logger {
+func (l *Logger) With(fields ...Field) LoggerInterface {
 	var ctx []Field
 
 	ll := len(l.context) + len(fields)
